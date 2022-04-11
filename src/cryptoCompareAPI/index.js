@@ -5,6 +5,5 @@ cc.setApiKey(
 
 export const fetchCoins = async () => {
   let coinsList = (await cc.coinList()).Data;
-  console.log("CrytoCompare Coints List : ", coinsList);
   return coinsList;
 };

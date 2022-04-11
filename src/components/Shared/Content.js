@@ -1,17 +1,15 @@
 import React from "react";
 import { AppContext } from "../../context/AppProvider";
 
-function Page({ name, children }) {
+function Content({ children }) {
   return (
     <AppContext.Consumer>
-      {({ page }) => {
-        if (page !== name) {
-          return null;
-        }
+      {({ coinsList }) => {
+        if (!coinsList) return <div>Loading Coins</div>;
         return <div>{children}</div>;
       }}
     </AppContext.Consumer>
   );
-} 
+}
 
-export default Page;
+export default Content;
