@@ -1,6 +1,6 @@
 import _ from "lodash";
 import React, { Component } from "react";
-import { fetchCoins, fetchPrices } from "../cryptoCompareAPI";
+import { fetchCoins, fetchHistorical, fetchPrices } from "../cryptoCompareAPI";
 
 export const AppContext = React.createContext();
 export class AppProvider extends Component {
@@ -9,18 +9,39 @@ export class AppProvider extends Component {
     this.state = {
       page: "my dashboard",
       favorites: [],
+      prices: [],
+      coinsList: [],
+      isCoinsLoading: false,
+      isPriceLoading: false,
+      isCoinDataLoading: false,
+      error: null,
+      chartInterval: "",
+      isLoading: false,
     };
   }
 
   componentDidMount = async () => {
+    this.setState({
+      isCoinsLoading: true,
+      isPriceLoading: true,
+      isCoinDataLoading: true,
+    });
     const coins = await fetchCoins();
     const savedSettings = await this.getSavedSettings();
-    const { favorites } = savedSettings;
+    const { favorites, currentFavorite, chartInterval } = savedSettings;
     const prices = await fetchPrices(favorites);
+    const historicalData = await fetchHistorical(
+      currentFavorite,
+      chartInterval || "years"
+    );
     this.setState({
       coinsList: coins,
       ...savedSettings,
       prices,
+      historicalData,
+      isCoinsLoading: false,
+      isPriceLoading: false,
+      isCoinDataLoading: false,
     });
   };
 
@@ -33,23 +54,32 @@ export class AppProvider extends Component {
         firstVisit: true,
       };
     }
-    let { favorites, currentFavorite } = cryptoWatchData;
+    let { favorites, currentFavorite, chartInterval } = cryptoWatchData;
     return {
       favorites,
       page: "my dashboard",
       firstVisit: false,
       currentFavorite,
+      chartInterval,
     };
   }
 
   setFavorites = async () => {
+    this.setState({
+      isPriceLoading: true,
+      isCoinDataLoading: true,
+      page: "my dashboard",
+    });
     if (this.state.firstVisit) {
       this.setState({
         firstVisit: false,
         page: "my dashboard",
       });
     }
-    const currentFavorite = this.state.favorites[0];
+    let currentFavorite = this.state.currentFavorite;
+    if (!this.state.favorites.includes(this.state.currentFavorite)) {
+      currentFavorite = this.state.favorites[0];
+    }
     localStorage.setItem(
       "cryptoWatch",
       JSON.stringify({
@@ -58,12 +88,22 @@ export class AppProvider extends Component {
       })
     );
     const prices = await fetchPrices(this.state.favorites);
-    this.setState({ prices, page: "my dashboard", currentFavorite });
+    const historicalData = await fetchHistorical(
+      this.state.currentFavorite,
+      this.state.chartInterval || "years"
+    );
+    this.setState({
+      prices,
+      currentFavorite,
+      historicalData,
+      isPriceLoading: false,
+      isCoinDataLoading: false,
+    });
   };
 
   addFavorite = (coin) => {
     let favorites = [...this.state.favorites];
-    if (!favorites.includes(coin)) {
+    if (!favorites.includes(coin) && favorites.length < 10) {
       favorites.push(coin);
       this.setState({ favorites });
     }
@@ -74,9 +114,13 @@ export class AppProvider extends Component {
     this.setState({ favorites });
   };
 
-  setCurrentFavorite = (coin) => {
-    this.setState({ currentFavorite: coin });
-
+  setCurrentFavorite = async (coin) => {
+    this.setState({ isCoinDataLoading: true, currentFavorite: coin });
+    const historicalData = await fetchHistorical(
+      this.state.currentFavorite,
+      this.state.chartInterval || "years"
+    );
+    this.setState({ historicalData, isCoinDataLoading: false });
     localStorage.setItem(
       "cryptoWatch",
       JSON.stringify({
@@ -84,6 +128,43 @@ export class AppProvider extends Component {
         currentFavorite: coin,
       })
     );
+  };
+
+  changeChart = async (value) => {
+    this.setState({ isCoinDataLoading: true });
+    if (!this.state.chartInterval) {
+      this.setState({ chartInterval: value });
+      const historicalData = await fetchHistorical(
+        this.state.currentFavorite,
+        value
+      );
+      localStorage.setItem(
+        "cryptoWatch",
+        JSON.stringify({
+          ...JSON.parse(localStorage.getItem("cryptoWatch")),
+          chartInterval: value,
+        })
+      );
+      this.setState({ historicalData, isCoinDataLoading: false });
+    } else {
+      if (this.state.chartInterval === value) return;
+      const historicalData = await fetchHistorical(
+        this.state.currentFavorite,
+        value
+      );
+      localStorage.setItem(
+        "cryptoWatch",
+        JSON.stringify({
+          ...JSON.parse(localStorage.getItem("cryptoWatch")),
+          chartInterval: value,
+        })
+      );
+      this.setState({
+        historicalData,
+        isCoinDataLoading: false,
+        chartInterval: value,
+      });
+    }
   };
   setFilteredCoins = (filteredCoins) => this.setState({ filteredCoins });
   render() {
@@ -97,6 +178,7 @@ export class AppProvider extends Component {
           confirmFavorites: this.setFavorites,
           setFilteredCoins: this.setFilteredCoins,
           setCurrentFavorite: this.setCurrentFavorite,
+          changeChart: this.changeChart,
         }}
       >
         {this.props.children}

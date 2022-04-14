@@ -126,7 +126,13 @@ export const Input = styled.input`
   ${fontSize1}
   padding:10px 20px;
 `;
-
+export const Select = styled.select`
+  ${fontSize3}
+  ${backgroundColor2}
+  color:#1163c9;
+  border: 1px solid;
+  margin: 20px 20px;
+`;
 export const PriceGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(5, minmax(300px, 1fr));
@@ -148,4 +154,11 @@ export const PriceTile = styled(CoinTile)`
       ${greenBoxShadow}
       pointer-events:none;
     `}
+`;
+
+export const ChartGrid = styled.div`
+  display: grid;
+  margin-top: 20px;
+  grid-gap: 20px;
+  grid-template-columns: 1fr 3fr;
 `;

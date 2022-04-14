@@ -7,7 +7,10 @@ import PriceCard from "./PriceCard";
 function Prices() {
   return (
     <AppContext.Consumer>
-      {({ prices, currentFavorite, setCurrentFavorite }) => {
+      {({ prices, currentFavorite, setCurrentFavorite, isPriceLoading }) => {
+        if (isPriceLoading) {
+          return <div>Loading...</div>;
+        }
         const pricesData = [];
         const keys = Object.keys(prices);
         let index = 0;
