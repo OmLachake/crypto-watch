@@ -3,7 +3,6 @@ import { css } from "styled-components";
 
 // Colors Used
 const green = "#03ff03";
-const blue = "#010e2c";
 
 const theme = "dark";
 //const theme = 'light';
@@ -36,7 +35,6 @@ export const fontSize2 = "font-size: 1.0em";
 export const fontSize3 = "font-size: .75em";
 export const textAlignCenter = "text-align: center;";
 
-
 export const Layout = styled.div`
   padding: 40px;
 `;
@@ -54,6 +52,7 @@ export const Bar = styled.ul`
 
 export const Logo = styled.div`
   font-size: 1.5rem;
+  font-family: "Baron", sans-serif;
 `;
 
 export const NavButton = styled.div`
@@ -99,25 +98,26 @@ export const CoinTile = styled.div`
   ${lightBlueBackground}
   padding:10px;
 
-  :hover{
-    ${props=>props.favorite? redBoxShadow  : props.selectable? greenBoxShadow : null}
+  :hover {
+    ${(props) =>
+      props.favorite ? redBoxShadow : props.selectable ? greenBoxShadow : null}
     cursor:pointer;
   }
-`
+`;
 export const CoinHeaderGrid = styled.div`
-  display:grid;
-  grid-template-columns:1fr 1fr;
-`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+`;
 
 export const CoinSymbol = styled.div`
-  justify-self:right;
-`
+  justify-self: right;
+`;
 
 export const CoinSearch = styled.div`
-  display:grid;
-  align-items:center;
+  display: grid;
+  align-items: center;
   grid-template-columns: 1fr 6fr;
-`
+`;
 
 export const Input = styled.input`
   ${backgroundColor2}
@@ -125,4 +125,27 @@ export const Input = styled.input`
   ${greenBoxShadow}
   ${fontSize1}
   padding:10px 20px;
-`
+`;
+
+export const PriceGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(5, minmax(300px, 1fr));
+  grid-gap: 20px;
+  margin-top: 40px;
+`;
+
+export const PriceTile = styled(CoinTile)`
+  ${(props) =>
+    props.compact &&
+    css`
+      ${fontSize3}
+      display:flex;
+      justify-content: space-between;
+    `}
+  ${(props) =>
+    props.currentFavorite &&
+    css`
+      ${greenBoxShadow}
+      pointer-events:none;
+    `}
+`;

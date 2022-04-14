@@ -10,3 +10,8 @@ body{
 	font-family: 'Do Hyeon', sans-serif;
 	font-size: 1.6rem;
 }
+
+@font-face {
+	font-family: 'Baron';
+	src: url(./BaronNeue-Black.otf) format('opentype');
+}

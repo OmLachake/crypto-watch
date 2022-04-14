@@ -1,6 +1,6 @@
 import _ from "lodash";
 import React, { Component } from "react";
-import { fetchCoins } from "../cryptoCompareAPI";
+import { fetchCoins, fetchPrices } from "../cryptoCompareAPI";
 
 export const AppContext = React.createContext();
 export class AppProvider extends Component {
@@ -8,14 +8,20 @@ export class AppProvider extends Component {
     super(props);
     this.state = {
       page: "my dashboard",
-      favorites: ["BTC", "ETH"],
+      favorites: [],
     };
   }
 
   componentDidMount = async () => {
     const coins = await fetchCoins();
-    const favorites = this.getSavedSettings();
-    this.setState({ coinsList: coins, favorites });
+    const savedSettings = await this.getSavedSettings();
+    const { favorites } = savedSettings;
+    const prices = await fetchPrices(favorites);
+    this.setState({
+      coinsList: coins,
+      ...savedSettings,
+      prices,
+    });
   };
 
   setPage = (page) => this.setState({ page });
@@ -27,18 +33,32 @@ export class AppProvider extends Component {
         firstVisit: true,
       };
     }
-    let { favorites } = cryptoWatchData;
-    return favorites;
+    let { favorites, currentFavorite } = cryptoWatchData;
+    return {
+      favorites,
+      page: "my dashboard",
+      firstVisit: false,
+      currentFavorite,
+    };
   }
 
-  setFavorites = () => {
-    this.setState({ firstVisit: false, page: "my dashboard" });
+  setFavorites = async () => {
+    if (this.state.firstVisit) {
+      this.setState({
+        firstVisit: false,
+        page: "my dashboard",
+      });
+    }
+    const currentFavorite = this.state.favorites[0];
     localStorage.setItem(
       "cryptoWatch",
       JSON.stringify({
         favorites: this.state.favorites,
+        currentFavorite,
       })
     );
+    const prices = await fetchPrices(this.state.favorites);
+    this.setState({ prices, page: "my dashboard", currentFavorite });
   };
 
   addFavorite = (coin) => {
@@ -54,6 +74,17 @@ export class AppProvider extends Component {
     this.setState({ favorites });
   };
 
+  setCurrentFavorite = (coin) => {
+    this.setState({ currentFavorite: coin });
+
+    localStorage.setItem(
+      "cryptoWatch",
+      JSON.stringify({
+        ...JSON.parse(localStorage.getItem("cryptoWatch")),
+        currentFavorite: coin,
+      })
+    );
+  };
   setFilteredCoins = (filteredCoins) => this.setState({ filteredCoins });
   render() {
     return (
@@ -65,6 +96,7 @@ export class AppProvider extends Component {
           setPage: this.setPage,
           confirmFavorites: this.setFavorites,
           setFilteredCoins: this.setFilteredCoins,
+          setCurrentFavorite: this.setCurrentFavorite,
         }}
       >
         {this.props.children}

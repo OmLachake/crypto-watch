@@ -7,3 +7,12 @@ export const fetchCoins = async () => {
   let coinsList = (await cc.coinList()).Data;
   return coinsList;
 };
+
+export const fetchPrices = async (favorites) => {
+  try {
+    return favorites && (await cc.priceFull(favorites, ["USD", "INR"]));
+  } catch (error) {
+    console.warn("Error While Fetching Prices : ", error);
+    return [];
+  }
+};

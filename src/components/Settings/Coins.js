@@ -10,7 +10,8 @@ function Coins({ favoritesGrid }) {
         return (
           <CoinsGrid>
             {favoritesGrid
-              ? favorites.map((coin) => {
+              ? favorites &&
+                favorites.map((coin) => {
                   return <CoinCard key={coin} favorite coin={coin} />;
                 })
               : (

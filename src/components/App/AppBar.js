@@ -5,7 +5,7 @@ import ControlButton from "./ControlButton";
 function AppBar() {
   return (
     <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <Logo>CryptoWatch</Logo>
+      <Logo>CRYPTOWATCH</Logo>
       <Bar>
         <li>
           <ControlButton name="my dashboard" />
