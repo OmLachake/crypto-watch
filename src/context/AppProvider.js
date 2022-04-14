@@ -89,7 +89,7 @@ export class AppProvider extends Component {
     );
     const prices = await fetchPrices(this.state.favorites);
     const historicalData = await fetchHistorical(
-      this.state.currentFavorite,
+      this.state.currentFavorite || this.state.favorites[0],
       this.state.chartInterval || "years"
     );
     this.setState({

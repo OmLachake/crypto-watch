@@ -83,7 +83,7 @@ function Chart() {
         ) : (
           <CoinTile>
             <Select
-              value={chartInterval}
+              value={chartInterval || "years"}
               onChange={(e) => changeChart(e.target.value)}
             >
               <option value="days"> Days </option>
