@@ -11,8 +11,10 @@ I Used :
  - Styled Components for Styling
 
 
-I Learn : 
+I Learnt : 
   - Creating and Using Custom Hooks
   - Plotting of Historical / Temporal Data Through and API
   - How Fuzzy Search Works
   - Charts using HighCharts
+
+Try it : https://cryptowatch-om.netlify.app
