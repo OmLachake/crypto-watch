@@ -1,6 +1,6 @@
 ### CryptoWatch
 
-A Basic Crypto Analysis Alorithm that allows to search through different Crypto currencies, add favorites, analyze the prices for the selected currencies, save it all in local storage for basic saving and loading features.
+A Basic Crypto Analysis Alorithm that allows to search through different Crypto currencies, add favorites, analyze the prices for the selected currencies, save it all in local storage for later access.
 
 I Used :
  - React, Context
