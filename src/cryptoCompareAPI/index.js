@@ -2,7 +2,7 @@ import moment from "moment";
 
 const cc = require("cryptocompare");
 cc.setApiKey(
-  "ae4f5d020a615ccb643cff84be548765d48bfcf422f73db2f2ed733d31612e60"
+  "c3e2bc229419394fbd44c8a65b0af436692403c4a79039a22d8d32a5953310a2"
 );
 
 export const fetchCoins = async () => {
